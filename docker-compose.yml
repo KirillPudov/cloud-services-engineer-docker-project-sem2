@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend-prod:
     image: ${DOCKER_USERNAME}/docker-project-backend:latest
     build:
       context: ./backend
@@ -32,17 +32,15 @@ services:
     profiles:
       - prod
     networks:
-      - app-network
+      - app-network-backend-prod
   
-  backend_dev:
+  backend-dev:
     image: ${DOCKER_USERNAME}/docker-project-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
-    ports:
-      - ${BACKEND_PORT:-8081}:8081
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
       interval: 30s
@@ -67,8 +65,104 @@ services:
     profiles:
       - dev
     networks:
-      - app-network
+      - app-network-backend-dev
+
+  frontend-prod:
+    image: ${DOCKER_USERNAME}/docker-project-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV:-production}
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BACKEND_PORT=${BACKEND_PORT:-prod}
+      - STAND=prod
+    ports:
+      - ${FRONTEND_PORT:-80}:80
+    depends_on:
+      - backend-prod
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 100M
+        reservations:
+          cpus: '0.1'
+          memory: 32M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      replicas: 1
+    profiles:
+      - prod
+    networks:
+      - app-network-frontend-prod
+    volumes:
+      - nginx-cache-prod:/var/cache/nginx:rw
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  
+  frontend-dev:
+    image: ${DOCKER_USERNAME}/docker-project-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV:-development}
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BACKEND_PORT=${BACKEND_PORT:-dev}
+      - STAND=dev
+    ports:
+      - ${FRONTEND_PORT:-80}:80
+    depends_on:
+      - backend-dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 100M
+        reservations:
+          cpus: '0.1'
+          memory: 32M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      replicas: 1
+    profiles:
+      - dev
+    networks:
+      - app-network-frontend-dev
+    volumes:
+      - nginx-cache-dev:/var/cache/nginx:rw
+      - /var/run/docker.sock:/tmp/docker.sock:ro
 
 networks:
-  app-network:
+  app-network-backend-dev:
     driver: bridge
+  app-network-frontend-dev:
+    driver: bridge
+  app-network-backend-prod:
+    driver: bridge
+  app-network-frontend-prod:
+    driver: bridge
+
+volumes:
+  nginx-cache-dev:
+  nginx-cache-prod:
