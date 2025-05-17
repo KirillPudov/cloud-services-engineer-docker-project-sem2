@@ -1,6 +1,9 @@
 services:
   backend:
     image: ${DOCKER_USERNAME}/docker-project-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend
     restart: unless-stopped
     environment:
