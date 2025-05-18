@@ -2,6 +2,8 @@ FROM node:21-alpine AS builder
 
 ARG NODE_ENV
 
+ENV DOCKER_CONTENT_TRUST=1
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -19,6 +21,8 @@ RUN npm run build
 FROM nginxproxy/nginx-proxy:1.7.1-alpine
 
 ARG NODE_ENV
+
+ENV DOCKER_CONTENT_TRUST=1
 
 ENV NODE_ENV=${NODE_ENV}
 

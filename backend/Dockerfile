@@ -2,6 +2,8 @@ FROM golang:1.17-alpine AS builder
 
 WORKDIR /app
 
+ENV DOCKER_CONTENT_TRUST=1
+
 COPY . .
 
 RUN apk add git &&\ 
@@ -12,6 +14,8 @@ RUN apk add git &&\
 FROM alpine:3.21
 
 WORKDIR /app
+
+ENV DOCKER_CONTENT_TRUST=1
 
 COPY --from=builder /app/api .
 
