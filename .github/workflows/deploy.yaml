@@ -92,10 +92,11 @@ jobs:
         uses: hoverkraft-tech/compose-action@v2.2.0
         with:
           compose-file: "./docker-compose.yml"
+          compose-flags: "--profile $STAND"
           services: |
             frontend-$STAND
             backend-$STAND
           down-flags: "--volumes"
-          up-flags: "--build --profile $STAND"
+          up-flags: "--build"
         env:
           STAND: ${{ secrets.STAND }}
