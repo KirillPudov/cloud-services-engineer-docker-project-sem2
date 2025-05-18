@@ -1,17 +1,22 @@
-{{- if $STAND == "dev" }}
+{{- if eq $.Env.STAND "dev" }}
 upstream backend {
-    server cloud-services-engineer-docker-project-sem2-backend-${STAND}-1:8081
-    server cloud-services-engineer-docker-project-sem2-backend-${STAND}-2:8081
-    server cloud-services-engineer-docker-project-sem2-backend-${STAND}-3:8081
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-1:8081;
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-2:8081;
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-3:8081;
+}
 {{- else }}
-    server cloud-services-engineer-docker-project-sem2-backend-${STAND}-4:8081
-    server cloud-services-engineer-docker-project-sem2-backend-${STAND}-5:8081
+upstream backend {
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-1:8081
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-2:8081
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-3:8081
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-4:8081
+    server cloud-services-engineer-docker-project-sem2-backend-{{$.Env.STAND}}-5:8081
 }
 {{- end }}
 
 server {
     listen 80;
-    server_name localhost;
+    server_name _;
     root /usr/share/nginx/html;
     index index.html;
 
