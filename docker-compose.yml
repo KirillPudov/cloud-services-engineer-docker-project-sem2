@@ -1,6 +1,6 @@
 services:
   backend-prod:
-    image: ${DOCKER_USERNAME}/docker-project-backend:latest
+    image: ${DOCKER_USER}/docker-project-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -37,7 +37,7 @@ services:
       - app-network-prod
   
   backend-dev:
-    image: ${DOCKER_USERNAME}/docker-project-backend:latest
+    image: ${DOCKER_USER}/docker-project-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -72,7 +72,7 @@ services:
       - app-network-dev
 
   frontend-prod:
-    image: ${DOCKER_USERNAME}/docker-project-frontend:latest
+    image: ${DOCKER_USER}/docker-project-frontend:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -124,7 +124,7 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock:ro
   
   frontend-dev:
-    image: ${DOCKER_USERNAME}/docker-project-frontend:latest
+    image: ${DOCKER_USER}/docker-project-frontend:latest
     build:
       context: ./frontend
       dockerfile: Dockerfile
